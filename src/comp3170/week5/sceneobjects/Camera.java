@@ -13,12 +13,16 @@ public class Camera extends SceneObject {
 	private Matrix4f projectionMatrix = new Matrix4f();
 	private Matrix4f viewMatrix = new Matrix4f();
 	
+	private float scale = 3.0f;
+	
 	public Camera() {
 		
 	}
 	
 	public void resize(int w, int h) {
 		//TODO: Change the projection matrix when the window is resized. (TASK 2)
+		float aspect = (float) w / h;
+		projectionMatrix.scaling(aspect);
 	}
 	
 	public Matrix4f GetViewMatrix(Matrix4f dest) {
@@ -36,10 +40,13 @@ public class Camera extends SceneObject {
 	public void update(InputManager input, float deltaTime) {
 		if (input.isKeyDown(GLFW_KEY_UP)) {
 			// TODO: Zoom the camera in
+			zoom -= scale * deltaTime;
 		}
 			
 		if (input.isKeyDown(GLFW_KEY_DOWN)) {
 			// TODO: Zoom the camera out
+			zoom += scale * deltaTime;
 		}
+		projectionMatrix.scaling(zoom, zoom, 1.0f);
 	}
 }

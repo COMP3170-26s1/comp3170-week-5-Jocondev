@@ -5,11 +5,13 @@ import static org.lwjgl.opengl.GL41.*;
 
 import org.joml.Matrix4f;
 import org.joml.Vector2i;
+import org.joml.Vector4f;
 
 import comp3170.OpenGLException;
 import comp3170.IWindowListener;
 import comp3170.ShaderLibrary;
 import comp3170.Window;
+import comp3170.week5.sceneobjects.Camera;
 import comp3170.InputManager;
 
 import java.io.File;
@@ -52,8 +54,14 @@ public class Week5 implements IWindowListener {
 		if (input.wasMouseClicked()) {
 			// TODO: Get the mouse position into NDC, and then into world space. (TASK 2)
 			input.getCursorPos(position); // This will get the mouse position in screen space.
+			
+			position = input.getCursorPos(position);
+			
+			System.out.println(input.getCursorPos(position));
 
 			// TODO: Add a new flower at the mouse position. (TASK 3)
+			Vector4f create = new Vector4f(position.x, position.y, 0f, 1f);
+			scene.createFlower(create);
 		}
 		
 		input.clear(); // Run this to clear input before the next frame.
@@ -72,6 +80,11 @@ public class Week5 implements IWindowListener {
 		
 		// TODO: Use the view and projection matricies to construct the mvpMatrix. (TASK 2)
 		//			Then send it down the scene graph!
+		Camera camera = scene.sceneCam();
+		camera.GetViewMatrix(viewMatrix);
+		camera.GetProjectionMatrix(projectionMatrix);
+		mvpMatrix.identity();
+		mvpMatrix.mul(viewMatrix).mul(projectionMatrix);
 		scene.draw(mvpMatrix);
 			
 	}
@@ -83,6 +96,8 @@ public class Week5 implements IWindowListener {
 		this.height = height;
 		glViewport(0,0,width,height);
 		// TODO: Recalculate the projection matrix when the window is resized. (TASK 2)
+		Camera camera = scene.sceneCam();
+		camera.resize(width, height);
 	}
 
 	@Override
