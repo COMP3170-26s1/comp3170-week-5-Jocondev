@@ -29,6 +29,10 @@ public class Week5 implements IWindowListener {
 	private long oldTime;
 	
 	private Scene scene;
+	
+	private Matrix4f viewMatrix  = new Matrix4f();
+	private Matrix4f projectionMatrix  = new Matrix4f();
+	private Matrix4f mvpMatrix = new Matrix4f();
 
 	public Week5()  throws OpenGLException {		
 		
@@ -57,20 +61,23 @@ public class Week5 implements IWindowListener {
 			
 			position = input.getCursorPos(position);
 			
-			System.out.println(input.getCursorPos(position));
+			Vector4f flowerpos = new Vector4f(0, 0, 0, 1);
+			flowerpos.x = 2.0f * position.x / width - 1;
+			flowerpos.y = -(2.0f * position.y / height - 1);
+			
+			
+			Matrix4f newFlowerMatrix = new Matrix4f();
+			newFlowerMatrix.set(mvpMatrix).invert();
+			flowerpos.mul(newFlowerMatrix);
+
+			scene.createFlower(flowerpos);
 
 			// TODO: Add a new flower at the mouse position. (TASK 3)
-			Vector4f create = new Vector4f(position.x, position.y, 0f, 1f);
-			scene.createFlower(create);
 		}
 		
 		input.clear(); // Run this to clear input before the next frame.
 		scene.update(input, deltaTime); // Use update() for scene logic and draw() to...well, draw.
 	}
-
-	private Matrix4f viewMatrix  = new Matrix4f();
-	private Matrix4f projectionMatrix  = new Matrix4f();
-	private Matrix4f mvpMatrix = new Matrix4f();
 	
 	public void draw() {
 		update();
@@ -86,7 +93,7 @@ public class Week5 implements IWindowListener {
 		mvpMatrix.identity();
 		mvpMatrix.mul(viewMatrix).mul(projectionMatrix);
 		scene.draw(mvpMatrix);
-			
+		//System.out.println(mvpMatrix);
 	}
 
 	@Override
